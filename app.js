@@ -1,9 +1,11 @@
 // require express 
 const express = require("express")
-const { blogs } = require("./model/index")
+const { blogs, users } = require("./model/index")
 const app  = express()
-// requiring multer middleware 
+const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 
+// requiring multer middleware 
 const {multer,storage} = require("./middleware/multerConfig")
 // const multer = require("./middleware/multerConfig").multer
 // const storage = require("./middleware/multerConfig").storage
@@ -90,6 +92,63 @@ app.delete("/blogs/:id",async(req,res)=>{
         message : "Blog deleted Successfully"
     })
 })
+
+
+// authentication starts 
+// REGISTRATION 
+app.post("/register",upload.single("profileImage"),async (req,res)=>{
+    const {userName,email,password} = req.body 
+    if(!userName || !email || !password){
+        return res.status(400).json({
+            message : "Please provide userName,email,password"
+        })
+    }
+
+    await users.create({
+        userName ,
+        email,
+        password : bcrypt.hashSync(password,10),
+        photo : req.file.filename
+    })
+    
+    res.status(200).json({
+        message : "User registered successfully"
+    })
+})
+
+
+//login user api 
+app.post("/login",async (req,res)=>{
+    const {email,password} = req.body 
+    // check if the email exists or not
+    const user = await users.findAll({
+        where : {
+            email : email 
+        }
+    })
+    if(user.length == 0 ){
+        res.status(404).json({
+            message : "Invalid email"
+        })
+    }else{
+        const doesPasswordMatch = bcrypt.compareSync(password,user[0].password)
+        if(!doesPasswordMatch){
+            res.status(400).json({
+                message : "Invalid Password"
+            })
+        }else {
+            const token = jwt.sign({id:user[0].id},"hahaha",{
+                expiresIn : '20d'
+            })
+            res.status(200).json({
+                token,
+                message : "logged In successfully"
+            })
+        }
+    }
+})
+
+
 
 // listen to port
 
