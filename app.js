@@ -39,7 +39,7 @@ app.post("/blogs",upload.single('blogImage') ,async (req,res)=>{
         title ,
         subTitle,
         description,
-        imageUrl : "http://localhost:3000/" +  req.file.filename
+        imageUrl : "http://dpmarathonnode.dpkailashcollab.com/" +  req.file.filename
     })
     res.status(200).json({
         message : "Blog created successfully"
@@ -108,7 +108,7 @@ app.post("/register",upload.single("profileImage"),async (req,res)=>{
         userName ,
         email,
         password : bcrypt.hashSync(password,10),
-        photo : req.file.filename
+        photo : "http://dpmarathonnode.dpkailashcollab.com/" +  req.file.filename
     })
     
     res.status(200).json({

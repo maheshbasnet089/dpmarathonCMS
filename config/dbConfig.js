@@ -1,8 +1,8 @@
 module.exports = {
     HOST: "localhost",
-    USER: "root",
-    PASSWORD: "",
-    DB: "dpmarathoncms",
+    USER: "dpkailas_manish",
+    PASSWORD: "1@d&s6,2!C*_",
+    DB: "dpkailas_marathonnode",
     dialect: "mysql",
     pool: {
       max: 5,
