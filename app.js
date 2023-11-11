@@ -2,10 +2,18 @@
 const express = require("express")
 const { blogs } = require("./model/index")
 const app  = express()
+// requiring multer middleware 
+
+const {multer,storage} = require("./middleware/multerConfig")
+// const multer = require("./middleware/multerConfig").multer
+// const storage = require("./middleware/multerConfig").storage
+const upload = multer({storage : storage})
 
 require("./model/index")
 // telling express to parse the incoming json data /
 app.use(express.json())
+
+app.use(express.static("./uploads/"))
 
 app.get("/",(req,res)=>{
     res.status(200).json({
@@ -14,7 +22,9 @@ app.get("/",(req,res)=>{
 })
 
 // createBlog Api 
-app.post("/blogs",async (req,res)=>{
+app.post("/blogs",upload.single('blogImage') ,async (req,res)=>{
+
+
     const title = req.body.title 
     const subTitle = req.body.subTitle
     const description = req.body.description 
@@ -26,7 +36,8 @@ app.post("/blogs",async (req,res)=>{
    await blogs.create({
         title ,
         subTitle,
-        description 
+        description,
+        imageUrl : "http://localhost:3000/" +  req.file.filename
     })
     res.status(200).json({
         message : "Blog created successfully"
